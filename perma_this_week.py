@@ -8,7 +8,7 @@ import csv
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--url", help="Cloudflare API URL", default=os.environ.get('CLOUDFLARE_API_URL', None))
+parser.add_argument("--zone", help="Cloudflare Perma zone", default=os.environ.get('CLOUDFLARE_PERMA_ZONE', None))
 parser.add_argument("--email", help="Cloudflare API email address", default=os.environ.get('CLOUDFLARE_API_EMAIL', None))
 parser.add_argument("--key", help="Cloudflare API key", default=os.environ.get('CLOUDFLARE_API_KEY', None))
 parser.add_argument("--html", help="Output filename for HTML")
@@ -24,14 +24,14 @@ days = map(lambda d: d.strftime('%Y-%m-%d'),
 
 # cloudflare stats
 # check that the args are not None?
-url = args.url
+url = "https://api.cloudflare.com/client/v4/zones/%s/analytics/dashboard" % (args.zone,)
 headers = {
     "Content-Type": "application/json",
     "X-Auth-Key": args.key,
     "X-Auth-Email": args.email
     }
     
-r = requests.get(args.url, headers=headers)
+r = requests.get(url, headers=headers)
 data = r.json()
 
 output = { u'uniques':   [],
