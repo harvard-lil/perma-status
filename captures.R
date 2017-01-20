@@ -1,6 +1,6 @@
 library(tidyverse)
 
-captures <- read_csv("/Users/bsteinberg/Documents/analytics/captures.csv")
+captures <- read_csv("./captures.csv")
 
 ggplot(captures, aes(timestamp, y = capture_time, color = queue_time)) + 
       geom_point(size = 0.1) + 
