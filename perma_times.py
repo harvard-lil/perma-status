@@ -1,15 +1,21 @@
 import requests
 from datetime import datetime
 from dateutil import tz
+import argparse
+import numpy as np
 
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--limit", help="How many captures to check", default=20, type=int)
+parser.add_argument("--offset", help="How many captures back", default=0, type=int)
+args = parser.parse_args()
 
 def lookup(url):
     r = requests.get(url)
     data = r.json()
     return (data['objects'], data['meta']['next'])
 
-
-url = "https://api.perma.cc/v1/public/archives/"
+url = "https://api.perma.cc/v1/public/archives?limit={limit}&offset={offset}".format(limit=args.limit, offset=args.offset)
 objects = []
 
 (objs, next_url) = lookup(url)
@@ -18,21 +24,52 @@ now = datetime.now(tz=tz.tzutc())
 last = now
 for obj in objs:
     timestamp = datetime.strptime(obj['creation_timestamp'], "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=tz.tzutc())
-    delta = now - timestamp
-    interval = last - timestamp
+    delta = (now - timestamp).total_seconds()
+    if last == now:
+        interval = None
+    else:
+        interval = (last - timestamp).total_seconds()
     last = timestamp
-    objects.append((timestamp, delta.total_seconds(), obj['queue_time'], obj['capture_time'], interval.total_seconds()))
+    objects.append((timestamp, delta, obj['queue_time'], obj['capture_time'], interval))
 
-print("most recent capture was {seconds:.0f} seconds ago".format(seconds=objects[0][1]))
-print("most recent completed capture was {seconds:.0f} seconds ago".format(seconds=filter(lambda x: x[3] is not None, objects)[0][1]))
-print("twentieth capture ago was {seconds:.0f} seconds ago".format(seconds=objects[-1][1]))
+mrc = objects[0][1]
+print("{offset}th capture ago was {seconds:.0f} seconds ago".format(offset=args.offset, seconds=mrc))
+mrcc = filter(lambda x: x[3] is not None, objects)[0][1]
+print("{offset}th completed capture was {seconds:.0f} seconds ago".format(offset=args.offset, seconds=mrcc))
+nthago = objects[-1][1]
+print("{limit}th capture ago was {seconds:.0f} seconds ago".format(limit=args.limit + args.offset, seconds=nthago))
+print("")
+queue_times = np.array([x[2] for x in objects if x[2] is not None])
+print("mean queue time over the {offset}th-{limit}th captures is {mean:.2f} seconds".format(offset=args.offset, limit=args.limit + args.offset, mean=np.mean(queue_times)))
+capture_times = np.array([x[3] for x in objects if x[3] is not None])
+print("mean capture time over the {offset}th-{limit}th captures is {mean:.2f} seconds".format(offset=args.offset, limit=args.limit + args.offset, mean=np.mean(capture_times)))
+print("")
+# why can capture_time be null when overall status is "success"?
+print("number of 'unfinished' captures in the {offset}th-{limit}th (null capture_time) is {number}".format(offset=args.offset, limit=args.limit + args.offset, number=len([x for x in objects if x[3] is None])))
+print("")
+# first "interval" is spurious, so skip it
+intervals = np.array([x[4] for x in objects[1:]])
+print("maximum interval between {offset}th-{limit}th captures is {max:.0f} seconds".format(offset=args.offset, limit=args.limit + args.offset, max=max(intervals)))
+print("minimum interval between {offset}th-{limit}th captures is {min:.0f} seconds".format(offset=args.offset, limit=args.limit + args.offset, min=min(intervals)))
+print("")
+print("capture health statistic candidates")
+print("(mrc == most recent capture, mrcc == most recent completed capture)")
+print("-----------------------------------")
+stat1 = mrc / np.mean(intervals)
+print("#1:  time to mrc / mean interval between {offset}th-{limit}th: {stat:.2f}".format(offset=args.offset, limit=args.limit + args.offset, stat=stat1))
+stat1a = mrcc / np.mean(intervals)
+print("#1a: time to mrcc / mean interval between {offset}th-{limit}th: {stat:.2f}".format(offset=args.offset, limit=args.limit + args.offset, stat=stat1a))
+stat2 = mrc / nthago
+print("#2:  time to mrc / time to {limit}th ago: {stat:.5f}".format(limit=args.limit + args.offset, stat=stat2))
+stat2a = mrcc / nthago
+print("#2a: time to mrcc / time to {limit}th ago: {stat:.5f}".format(limit=args.limit + args.offset, stat=stat2a))
+stat3 = np.std(intervals)
+print("#3:  standard deviation of intervals between {offset}th-{limit}th: {stat:.2f}".format(offset=args.offset, limit=args.limit + args.offset, stat=stat3))
+stat4 = mrc / stat3
+print("#4:  time to mrc / standard deviation of intervals between {offset}th-{limit}th: {stat:.2f}".format(offset=args.offset, limit=args.limit + args.offset, stat=stat4))
+stat5 = mrcc / stat3
+print("#5:  time to mrcc / standard deviation of intervals between {offset}th-{limit}th: {stat:.2f}".format(offset=args.offset, limit=args.limit + args.offset, stat=stat5))
 
-queue_times = [x[2] for x in objects if x[2] is not None]
-print("mean queue time over the last twenty captures is {mean:.2f} seconds".format(mean=sum(queue_times) / float(len(queue_times))))
-capture_times = [x[3] for x in objects if x[3] is not None]
-print("mean capture time over the last twenty captures is {mean:.2f} seconds".format(mean=sum(capture_times) / float(len(capture_times))))
+# compare some of these stats with limit == 20 to the same with limit == 100 or 1000?
+# or the change from limit 20, offset 100 to limit 20, offset 0?
 
-print("number of unfinished captures in the last twenty is {number}".format(number=len([x for x in objects if x[3] is None])))
-
-print("maximum interval between last twenty captures is {max:.0f} seconds".format(max=max([x[4] for x in objects])))
-print("minimum interval between last twenty captures is {min:.0f} seconds".format(min=min([x[4] for x in objects])))
