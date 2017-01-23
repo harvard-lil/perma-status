@@ -33,9 +33,9 @@ def perma_monitor():
         report['status'] = 'PROBLEM'
         report['messages'].append("{count} uncompleted captures in the last {limit}".format(count=unfinished, limit=limit))
 
-    if stat2a > thresholds['statistic']:
+    if statistic > thresholds['statistic']:
         report['status'] = 'PROBLEM'
-        report['messages'].append("stat2a (time to last successful capture) is {stat}".format(stat=statistic))
+        report['messages'].append("statistic for time to last successful capture) is {stat}".format(stat=statistic))
 
     output = {
         'unfinished': unfinished,
