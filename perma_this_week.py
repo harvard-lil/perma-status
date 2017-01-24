@@ -51,22 +51,23 @@ for day in data['result']['timeseries']:
 
 def cloudflare_formatter(x):
     """
-    This is dodgy. Only will work while number of requests is low.
-    Make the cut-off dependent on the data....
+    This is (still) dodgy. Only will work when bandwidth
+    is not a nice round number.
     """
-    if x > 100000:
+    if x % 1000 != 0:
         return "%dM" % (round(x) / 1024 / 1024,)
     else:
         return "%d" % x
 
-cloudflare = pygal.Line(disable_xml_declaration=True, height=200, value_formatter=cloudflare_formatter, x_label_rotation=20, max_scale=10)
+cloudflare = pygal.Line(disable_xml_declaration=True, height=200, x_label_rotation=20, max_scale=10)
 today = datetime.today()
 cloudflare.x_labels = map(lambda d: d.strftime('%a %Y-%m-%d'),
                      [today + timedelta(days=i) for i in range(-7,0)])
 for key in output:
     if key != 'bandwidth':
         cloudflare.add(key, output[key])
-
+# it would be nice if the formatter could only apply to the secondary
+cloudflare.value_formatter = cloudflare_formatter
 cloudflare.add('bandwidth', output['bandwidth'], secondary=True)
 
 
