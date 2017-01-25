@@ -113,14 +113,21 @@ tpl = '''
     <title>Perma.cc status</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
-    <link rel="stylesheet" href="css/normalize.css">
-    <link rel="stylesheet" href="css/skeleton.css">
-    <link href="images/favicon.ico" rel="shortcut icon" type="image/x-icon">
+    {% raw %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
+    <link href="{{ url_for('static', filename='images/favicon.ico') }}" rel="shortcut icon" type="image/x-icon">
+    {% endraw %}
   </head>
   <body>
     <div class="section charts">
       <div class="container">
-        <h3><a href="https://perma.cc/">perma.cc</a> is up!</h3>
+        {% raw %}
+        <h3><a href="https://perma.cc/">perma.cc</a> is {{ up }}</h3>
+        {% if message %}
+        <p>{{ message }}</p>
+        {% endif %}
+        {% endraw %}
         <div class="row">
           <h5>perma captures this week</h5>
             <figure>
