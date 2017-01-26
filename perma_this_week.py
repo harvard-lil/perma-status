@@ -114,9 +114,9 @@ tpl = '''
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
     {% raw %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css') }}">
-    <link href="{{ url_for('static', filename='images/favicon.ico') }}" rel="shortcut icon" type="image/x-icon">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css', _external=True, _scheme='') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css', _external=True, _scheme='') }}">
+    <link href="{{ url_for('static', filename='images/favicon.ico', _external=True, _scheme='') }}" rel="shortcut icon" type="image/x-icon">
     {% endraw %}
   </head>
   <body>
