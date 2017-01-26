@@ -116,6 +116,7 @@ tpl = '''
     {% raw %}
     <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css', _external=True, _scheme='') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css', _external=True, _scheme='') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css', _external=True, _scheme='') }}">
     <link href="{{ url_for('static', filename='images/favicon.ico', _external=True, _scheme='') }}" rel="shortcut icon" type="image/x-icon">
     {% endraw %}
   </head>
