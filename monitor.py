@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def perma_status(up="up!", message=None):
+def perma_status(up="up!", message="Perma, like much of the rest of the web, is having trouble due to a problem in Amazon's S3 storage service."):
     """
     Show the status page with charts
 
