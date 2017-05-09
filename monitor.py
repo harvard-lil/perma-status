@@ -27,7 +27,7 @@ def perma_monitor():
     }
     objects = get_objects(limit, 0)
 
-    # how many of the last {limit} captures are not complete?
+    # how many of the last {limit} captures that are not user uploads are not complete?
     unfinished = len([x for x in objects if x[3] is None and (not x[4])])
 
     # what is the ratio of seconds from now to the last completed capture
