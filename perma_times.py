@@ -24,5 +24,9 @@ def get_objects(limit, offset):
         else:
             interval = (last - timestamp).total_seconds()
         last = timestamp
-        objects.append((timestamp, delta, obj['queue_time'], obj['capture_time'], interval))
+        user_upload = False
+        for capture in obj['captures']:
+            if capture['user_upload']:
+                user_upload = True
+        objects.append((timestamp, delta, obj['queue_time'], obj['capture_time'], interval, user_upload))
     return objects
