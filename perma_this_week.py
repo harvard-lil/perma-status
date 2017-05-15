@@ -88,7 +88,7 @@ while True:
     if objs[-1]["creation_timestamp"] < min(days):
         break
     else:
-        url = "https://api.perma.cc%s" % (next_url,)
+        url = next_url
 
 for obj in objects:
     day = str(obj["creation_timestamp"][0:10])
