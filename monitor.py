@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def perma_status(up="down.", message="Perma is undergoing database maintenance and will be up shortly."):
+def perma_status(up="up!", message=None):
     """
     Show the status page with charts
 
