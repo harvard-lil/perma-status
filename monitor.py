@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 @app.route('/')
-def perma_status(up="down.", message="We are investigating. Thank you for your patience."):
+def perma_status(up="up!", message=None):
     """
     Show the status page with charts
 
