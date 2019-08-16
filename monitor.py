@@ -5,7 +5,7 @@ from perma_times import get_objects
 app = Flask(__name__)
 
 
-@app.route('/')
+@app.route("/")
 def perma_status(up="up!", message=None):
     """
     Show the status page with charts
@@ -15,16 +15,14 @@ def perma_status(up="up!", message=None):
     try:
         return render_template("index.html", up=up, message=message)
     except:
-        return jsonify({'error': 'missing template'})
+        return jsonify({"error": "missing template"})
 
-@app.route('/monitor')
+
+@app.route("/monitor")
 def perma_monitor():
     """ hit the Perma API and get the last twenty captures for analysis """
     limit = 20
-    thresholds = {
-        'unfinished': 7,
-        'statistic': 0.9
-    }
+    thresholds = {"unfinished": 7, "statistic": 0.9}
     objects = get_objects(limit, 0)
 
     # how many of the last {limit} captures that are not user uploads are not complete?
@@ -38,21 +36,22 @@ def perma_monitor():
     # previously known as stat2a
     statistic = mrcc / nthago
 
-    report = {
-        'status': 'OK',
-        'messages': []
-    }
-    if unfinished > thresholds['unfinished']:
-        report['status'] = 'PROBLEM'
-        report['messages'].append("{count} uncompleted captures in the last {limit}".format(count=unfinished, limit=limit))
+    report = {"status": "OK", "messages": []}
+    if unfinished > thresholds["unfinished"]:
+        report["status"] = "PROBLEM"
+        report["messages"].append(
+            "{count} uncompleted captures in the last {limit}".format(
+                count=unfinished, limit=limit
+            )
+        )
 
-    if statistic > thresholds['statistic']:
-        report['status'] = 'PROBLEM'
-        report['messages'].append("statistic for time to last successful capture) is {stat}".format(stat=statistic))
+    if statistic > thresholds["statistic"]:
+        report["status"] = "PROBLEM"
+        report["messages"].append(
+            "statistic for time to last successful capture) is {stat}".format(
+                stat=statistic
+            )
+        )
 
-    output = {
-        'unfinished': unfinished,
-        'statistic': statistic,
-        'report': report
-    }
+    output = {"unfinished": unfinished, "statistic": statistic, "report": report}
     return jsonify(**output)
