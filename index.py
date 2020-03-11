@@ -9,6 +9,9 @@ import humanize
 
 @click.command()
 def index():
+    """
+    This program generates the index template for the Perma status page.
+    """
     data = retrieve_data()['data']
 
     x_labels = days_map("%a %Y-%m-%d")
