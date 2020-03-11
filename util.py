@@ -10,9 +10,8 @@ def lookup(url):
 
 
 def get_objects(limit, offset):
-    url = "https://api.perma.cc/v1/public/archives?limit={limit}&offset={offset}".format(
-        limit=limit, offset=offset
-    )
+    base = 'https://api.perma.cc/v1/public/archives'
+    url = f'{base}?limit={limit}&offset={offset}'
     objects = []
 
     (objs, next_url) = lookup(url)
@@ -44,3 +43,24 @@ def get_objects(limit, offset):
             )
         )
     return objects
+
+
+def get_counts(days):
+    counts = dict.fromkeys(days, 0)
+    url = "https://api.perma.cc/v1/public/archives/"
+    objects = []
+
+    while True:
+        (objs, next_url) = lookup(url)
+        objects = objects + objs
+        if objs[-1]["creation_timestamp"] < min(days):
+            break
+        else:
+            url = next_url
+
+    for obj in objects:
+        day = str(obj["creation_timestamp"][0:10])
+        if day in days:
+            counts[day] += 1
+
+    return counts

@@ -1,0 +1,10 @@
+pip-tools
+python-dotenv
+flake8
+requests
+click
+pygal
+jinja2
+Flask
+python-dateutil
+humanize
