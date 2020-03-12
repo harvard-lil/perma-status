@@ -6,6 +6,9 @@ import json
 from datetime import datetime, timedelta
 
 
+# this is a GraphQL query for Cloudflare's new analytics API.
+# See https://developers.cloudflare.com/analytics/graphql-api/
+# and https://graphql.org/
 query = """
 {
   viewer {
