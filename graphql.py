@@ -9,10 +9,10 @@ from datetime import datetime, timedelta
 query = """
 {
   viewer {
-    zones(filter: {zoneTag: "ZONETAG"}) {
+    zones(filter: {zoneTag: "REPLACE"}) {
       httpRequests1dGroups(limit: 10,
-                           filter: {date_geq: "STARTDATE",
-                                    date_leq: "ENDDATE"},
+                           filter: {date_geq: "REPLACE",
+                                    date_leq: "REPLACE"},
                            orderBy: [date_ASC]) {
         sum {
           bytes
@@ -40,7 +40,7 @@ query = """
 @click.option('--end',
               default=str(datetime.now().date() - timedelta(days=1)),
               help='End date, defaults to yesterday')
-def hello(start, end):
+def print_data(start, end):
     result = retrieve_data(start, end)
     print(json.dumps(result))
 
@@ -54,13 +54,11 @@ def retrieve_data(start=str(datetime.now().date() - timedelta(days=7)),
                'X-Auth-Key': os.getenv('CF_KEY')}
     data = query.replace('{', '{{') \
                 .replace('}', '}}') \
-                .replace('ZONETAG', '{}')  \
-                .replace('STARTDATE', '{}')  \
-                .replace('ENDDATE', '{}')  \
+                .replace('REPLACE', '{}')  \
                 .format(os.getenv('CF_ZONE'), start, end)
     r = requests.post(url, headers=headers, json={'query': data})
     return r.json()
 
 
 if __name__ == '__main__':
-    hello()
+    print_data()
