@@ -3,6 +3,7 @@ from graphql import retrieve_data
 from util import get_counts
 from datetime import datetime, timedelta
 import pygal
+from pygal.style import DefaultStyle
 from jinja2 import Template
 import humanize
 
@@ -16,12 +17,16 @@ def index():
 
     x_labels = days_map("%a %Y-%m-%d")
 
+    custom_style = DefaultStyle
+    custom_style.background = 'transparent'
+
     # generate cloudflare graph
     cloudflare = pygal.Line(
         disable_xml_declaration=True,
         height=200,
         x_label_rotation=20,
-        max_scale=10
+        max_scale=10,
+        style=custom_style
     )
     cloudflare.x_labels = x_labels
     cloudflare.value_formatter = number_formatter
@@ -50,7 +55,8 @@ def index():
     # generate perma captures graph
     captures = pygal.Line(disable_xml_declaration=True,
                           height=200,
-                          x_label_rotation=20)
+                          x_label_rotation=20,
+                          style=custom_style)
     captures.x_labels = x_labels
     captures.value_formatter = number_formatter
 
