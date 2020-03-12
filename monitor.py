@@ -40,26 +40,19 @@ def perma_monitor():
     # to the seconds from now to {limit} captures ago?
     # 'mrcc' means 'most recent completed capture'
     mrcc = list(filter(lambda x: x[3] is not None, objects))[0][1]
-    nthago = objects[-1][1]
-    # previously known as stat2a
-    statistic = mrcc / nthago
+    nth_ago = objects[-1][1]
+    statistic = mrcc / nth_ago
 
     report = {"status": "OK", "messages": []}
     if unfinished > thresholds["unfinished"]:
         report["status"] = "PROBLEM"
-        report["messages"].append(
-            "{count} uncompleted captures in the last {limit}".format(
-                count=unfinished, limit=limit
-            )
-        )
+        msg = f"{unfinished} uncompleted captures in the last {limit}"
+        report["messages"].append(msg)
 
     if statistic > thresholds["statistic"]:
         report["status"] = "PROBLEM"
-        report["messages"].append(
-            "statistic for time to last successful capture) is {stat}".format(
-                stat=statistic
-            )
-        )
+        msg = f"statistic for time to last successful capture) is {statistic}"
+        report["messages"].append(msg)
 
     output = {
         "unfinished": unfinished,
