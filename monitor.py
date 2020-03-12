@@ -7,7 +7,7 @@ app = Flask(__name__)
 
 
 @app.route("/")
-def perma_status(up="up!", message=None):
+def perma_status(up="up!", message=""):
     """
     Show the status page with charts
 
@@ -22,7 +22,7 @@ def perma_status(up="up!", message=None):
     try:
         return render_template("index.html", up=up, message=message)
     except Exception:
-        return jsonify({"error": "missing template"})
+        return jsonify({"error": "missing template"}), 500
 
 
 @app.route("/monitor")

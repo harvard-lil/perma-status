@@ -85,31 +85,27 @@ tpl = """
     <meta charset="UTF-8"/>
     <title>Perma.cc status</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="//fonts.googleapis.com/css?family=Raleway:400,300,600" rel="stylesheet" type="text/css">
     {% raw %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css', _external=True, _scheme='') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/skeleton.css', _external=True, _scheme='') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/custom.css', _external=True, _scheme='') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css', _external=True, _scheme='') }}">
     <link href="{{ url_for('static', filename='images/favicon.ico', _external=True, _scheme='') }}" rel="shortcut icon" type="image/x-icon">
     {% endraw %}
   </head>
   <body>
-    <div class="section charts">
-      <div class="container">
+  <main id="main" class="">
+    <div id="main-content" class="container cont-full-bleed">
+      <div class="container cont-fixed">
         {% raw %}
-        <h3><a href="https://perma.cc/">perma.cc</a> is {{ up }}</h3>
-        {% if message %}
-        <p>{{ message }}</p>
-        {% endif %}
+        <h1><a href="https://perma.cc/">Perma.cc</a> is {{ up }}</h1>
+        <p class="page-dek">{{ message }}</p>
         {% endraw %}
-        <div class="row">
-          <h5>perma captures this week</h5>
+        <div class="row container cont-fixed">
+          <h2>perma captures this week</h2>
             <figure>
               {{ captures|safe }}
             </figure>
         </div>
-        <div class="row">
-          <h5>cloudflare stats this week</h5>
+        <div class="row container cont-fixed">
+          <h2>cloudflare stats this week</h2>
             <figure>
               {{ cloudflare|safe }}
             </figure>
@@ -117,6 +113,7 @@ tpl = """
       </div>
     </div>
   </body>
+  </main>
 </html>
 """  # noqa
 
