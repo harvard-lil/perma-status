@@ -33,20 +33,29 @@ query = """
 """
 
 
+def days_ago(n):
+    """ Helper function for default args """
+    return str(datetime.now().date() - timedelta(days=n))
+
+
+a_week_ago = days_ago(7)
+yesterday = days_ago(1)
+
+
 @click.command()
 @click.option('--start',
-              default=str(datetime.now().date() - timedelta(days=7)),
+              default=a_week_ago,
               help='Start date, defaults to a week ago')
 @click.option('--end',
-              default=str(datetime.now().date() - timedelta(days=1)),
+              default=yesterday,
               help='End date, defaults to yesterday')
 def print_data(start, end):
     result = retrieve_data(start, end)
     print(json.dumps(result))
 
 
-def retrieve_data(start=str(datetime.now().date() - timedelta(days=7)),
-                  end=str(datetime.now().date() - timedelta(days=1))):
+def retrieve_data(start=a_week_ago,
+                  end=yesterday):
     load_dotenv()
     url = 'https://api.cloudflare.com/client/v4/graphql'
     headers = {'Content-Type': 'application/json',  # necessary?
