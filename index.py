@@ -6,6 +6,8 @@ import pygal
 from pygal.style import DefaultStyle
 from jinja2 import Environment, FileSystemLoader
 import humanize
+import re
+from uuid import uuid4
 
 
 @click.command()
@@ -72,17 +74,27 @@ def index():
     loader = FileSystemLoader('templates')
     template = Environment(loader=loader).get_template('base.html')
 
-    # replace the "Pygal" title, since pygal doesn't allow you to omit it
+    def edit(chart):
+        """
+        Replace the "Pygal" title, since pygal doesn't allow you to omit it.
+        Replace the "activate-serie-<n>" IDs, since a duplicate ID is an
+        error in the HTML validator, and we're displaying more than one chart.
+        """
+        retitled = chart.render(show_legend=True, is_unicode=True).replace(
+            '<title>Pygal</title>',
+            '<title>Perma captures</title>'
+        )
+        # generate an ID per chart
+        uuid = uuid4()
+        return re.sub(
+            r'id="activate-serie-(\d)"',
+            f'id="activate-serie-\g<1>-{uuid}"',
+            retitled
+        )
+    renders = list(map(edit, [captures, cloudflare]))
     print(template.render(
-        captures=captures.render(show_legend=True,
-                                 is_unicode=True).replace(
-            "<title>Pygal</title>", "<title>Perma captures</title>"
-        ),
-        cloudflare=cloudflare.render(show_legend=True,
-                                     is_unicode=True).replace(
-            "<title>Pygal</title>", "<title>Cloudflare stats</title>"
-                                     ),
-    ))
+        captures=renders[0],
+        cloudflare=renders[1]))
 
 
 def days_map(format):
