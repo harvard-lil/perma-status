@@ -4,7 +4,7 @@ from util import get_counts
 from datetime import datetime, timedelta
 import pygal
 from pygal.style import DefaultStyle
-from jinja2 import Template
+from jinja2 import Environment, FileSystemLoader
 import humanize
 
 
@@ -23,7 +23,8 @@ def index():
     # generate cloudflare graph
     cloudflare = pygal.Line(
         disable_xml_declaration=True,
-        height=200,
+        height=250,
+        width=1100,
         x_label_rotation=20,
         max_scale=10,
         style=custom_style
@@ -54,7 +55,8 @@ def index():
 
     # generate perma captures graph
     captures = pygal.Line(disable_xml_declaration=True,
-                          height=200,
+                          height=250,
+                          width=1100,
                           x_label_rotation=20,
                           style=custom_style)
     captures.x_labels = x_labels
@@ -67,12 +69,11 @@ def index():
                  formatter=lambda d: humanize.intcomma(d))
 
     # prepare template
-    template = Template(tpl)
+    loader = FileSystemLoader('templates')
+    template = Environment(loader=loader).from_string(tpl)
 
     # replace the "Pygal" title, since pygal doesn't allow you to omit it
     print(template.render(
-        # captures=captures.render_data_uri(),
-        # cloudflare=cloudflare.render_data_uri()
         captures=captures.render(show_legend=True,
                                  is_unicode=True).replace(
             "<title>Pygal</title>", "<title>Perma captures</title>"
@@ -80,7 +81,7 @@ def index():
         cloudflare=cloudflare.render(show_legend=True,
                                      is_unicode=True).replace(
             "<title>Pygal</title>", "<title>Cloudflare stats</title>"
-        ),
+                                     ),
     ))
 
 
@@ -120,6 +121,7 @@ tpl = """
     </div>
   </body>
   </main>
+  {% include 'footer.html' %}
 </html>
 """  # noqa
 
