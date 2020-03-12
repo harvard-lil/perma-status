@@ -1,6 +1,6 @@
 import click
-from graphql import retrieve_data
-from util import get_counts
+from cloudflare import retrieve_data
+from perma import get_counts
 from datetime import datetime, timedelta
 import pygal
 from pygal.style import DefaultStyle
