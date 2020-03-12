@@ -11,7 +11,7 @@ import humanize
 @click.command()
 def index():
     """
-    This program generates the index template for the Perma status page.
+    This program prints the index template for the Perma status page.
     """
     data = retrieve_data()['data']
 

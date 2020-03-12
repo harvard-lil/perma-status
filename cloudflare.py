@@ -48,17 +48,27 @@ yesterday = days_ago(1)
 @click.command()
 @click.option('--start',
               default=a_week_ago,
-              help='Start date, defaults to a week ago')
+              help='Start date, YYYY-MM-DD, defaults to a week ago')
 @click.option('--end',
               default=yesterday,
-              help='End date, defaults to yesterday')
+              help='End date, YYYY-MM-DD, defaults to yesterday')
 def print_data(start, end):
+    """
+    This program prints out the JSON from a query to Cloudflare's
+    GraphQL analytics API. It is mainly for diagnostic purposes;
+    you probably want to `import retrieve_data from cloudflare`
+    and use that instead.
+    """
     result = retrieve_data(start, end)
     print(json.dumps(result))
 
 
 def retrieve_data(start=a_week_ago,
                   end=yesterday):
+    """
+    Posts a GraphQL query to the Cloudflare analytics API endpoint
+    and returns the result
+    """
     load_dotenv()
     url = 'https://api.cloudflare.com/client/v4/graphql'
     headers = {'Content-Type': 'application/json',  # necessary?
