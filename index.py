@@ -51,7 +51,7 @@ def index():
     cloudflare.add('bytes',
                    cloudflare_data['bytes'],
                    secondary=True,
-                   formatter=lambda d: sizeof_fmt(d))
+                   formatter=lambda d: sizeof_formatter(d))
 
     # generate perma captures graph
     captures = pygal.Line(disable_xml_declaration=True,
@@ -86,6 +86,9 @@ def index():
 
 
 def days_map(format):
+    """
+    Helper function for generating a list of day-strings in a given format
+    """
     today = datetime.today()
     return list(map(
         lambda d: d.strftime(format),
@@ -94,7 +97,11 @@ def days_map(format):
 
 
 # adapted from https://stackoverflow.com/a/1094933/4074877
-def sizeof_fmt(num, suffix=''):
+def sizeof_formatter(num, suffix=''):
+    """
+    This formatter is intended for the "bytes" tooltip in the
+    Cloudflare graph.
+    """
     for unit in ['', 'K', 'M', 'G', 'T', 'P', 'E', 'Z']:
         if abs(num) < 1024.0:
             return f'{num:.1f}{unit}{suffix}'
@@ -104,7 +111,9 @@ def sizeof_fmt(num, suffix=''):
 
 def number_formatter(x):
     """
-    This is dodgy.
+    This formatter is meant to handle both y-axes of the Cloudflare
+    graph, and is used for the capture graph as well. The mismatch
+    between its behavior and sizeof_formatter's is "intended".
     """
     if x > 2000000:
         return f'{round(x / 1024 / 1024)}M'

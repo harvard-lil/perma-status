@@ -4,12 +4,19 @@ from dateutil import tz
 
 
 def lookup(url):
+    """
+    Helper function for iterating through the Perma API
+    """
     r = requests.get(url)
     data = r.json()
     return (data["objects"], data["meta"]["next"])
 
 
 def get_objects(limit, offset):
+    """
+    Return the last <limit> objects from the public Perma API,
+    starting at <offset>
+    """
     base = 'https://api.perma.cc/v1/public/archives'
     url = f'{base}?limit={limit}&offset={offset}'
     objects = []
@@ -46,6 +53,9 @@ def get_objects(limit, offset):
 
 
 def get_counts(days):
+    """
+    Get the number of captures per day for a given sequence of days
+    """
     counts = dict.fromkeys(days, 0)
     url = "https://api.perma.cc/v1/public/archives/"
     objects = []
