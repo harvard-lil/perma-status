@@ -6,8 +6,6 @@ import pygal
 from pygal.style import DefaultStyle
 from jinja2 import Environment, FileSystemLoader
 import humanize
-import re
-from uuid import uuid4
 
 
 @click.command()
@@ -77,19 +75,10 @@ def index():
     def edit(chart):
         """
         Replace the "Pygal" title, since pygal doesn't allow you to omit it.
-        Replace the "activate-serie-<n>" IDs, since a duplicate ID is an
-        error in the HTML validator, and we're displaying more than one chart.
         """
-        retitled = chart.render(show_legend=True, is_unicode=True).replace(
+        return chart.render(show_legend=True, is_unicode=True).replace(
             '<title>Pygal</title>',
             '<title>Perma captures</title>'
-        )
-        # generate an ID per chart
-        uuid = uuid4()
-        return re.sub(
-            r'id="activate-serie-(\d)"',
-            f'id="activate-serie-\g<1>-{uuid}"',
-            retitled
         )
     renders = list(map(edit, [captures, cloudflare]))
     print(template.render(
