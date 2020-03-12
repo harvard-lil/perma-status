@@ -70,7 +70,7 @@ def index():
 
     # prepare template
     loader = FileSystemLoader('templates')
-    template = Environment(loader=loader).from_string(tpl)
+    template = Environment(loader=loader).get_template('base.html')
 
     # replace the "Pygal" title, since pygal doesn't allow you to omit it
     print(template.render(
@@ -83,47 +83,6 @@ def index():
             "<title>Pygal</title>", "<title>Cloudflare stats</title>"
                                      ),
     ))
-
-
-tpl = """
-<!doctype html>
-  <html lang="en">
-    <head>
-    <meta charset="UTF-8"/>
-    <title>Perma.cc status</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% raw %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/global.css', _external=True, _scheme='') }}">
-    <link href="{{ url_for('static', filename='images/favicon.ico', _external=True, _scheme='') }}" rel="shortcut icon" type="image/x-icon">
-    {% endraw %}
-  </head>
-  <body>
-  <main id="main" class="">
-    <div id="main-content" class="container cont-full-bleed">
-      <div class="container cont-fixed">
-        {% raw %}
-        <h1><a href="https://perma.cc/">Perma.cc</a> is {{ up }}</h1>
-        <p class="page-dek">{{ message }}</p>
-        {% endraw %}
-        <div class="row container cont-fixed">
-          <h2>perma captures this week</h2>
-            <figure>
-              {{ captures|safe }}
-            </figure>
-        </div>
-        <div class="row container cont-fixed">
-          <h2>cloudflare stats this week</h2>
-            <figure>
-              {{ cloudflare|safe }}
-            </figure>
-        </div>
-      </div>
-    </div>
-  </body>
-  </main>
-  {% include 'footer.html' %}
-</html>
-"""  # noqa
 
 
 def days_map(format):
