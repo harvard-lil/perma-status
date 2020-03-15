@@ -32,9 +32,7 @@ def index():
     cloudflare.x_labels = x_labels
     cloudflare.value_formatter = number_formatter
     keys = {'bytes', 'threats', 'uniques', 'pageViews', 'requests'}
-    cloudflare_data = {
-        k: [] for k in keys
-    }
+    cloudflare_data = {k: [] for k in keys}
 
     for d in data['viewer']['zones'][0]['httpRequests1dGroups']:
         for key in keys - {'uniques'}:
