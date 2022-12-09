@@ -1,20 +1,16 @@
 perma-status
 ============
 
-This is a Flask application and associated code for generating the site [status.perma.cc](https://status.perma.cc/).
+This is a Flask application and associated code for generating the
+site [status.perma.cc](https://status.perma.cc/).
 
-For development, start a virtualenv and install requirements:
+For development, use [Poetry](https://python-poetry.org/). After any
+changes to `poetry.lock`, export requirements for use in deployment:
 
-    python3 -m venv env
-    . env/bin/activate
-    pip install -r requirements.txt
+    poetry export -o requirements.txt
 
-After editing `requirements.in`, run
-
-    pip-compile
-    pip install -r requirements.txt
-
-Generate the index template with
+In deployment, set up a virtual environment, install requirements, and
+generate the index template with
 
     python index.py > templates/index.html
 
