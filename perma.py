@@ -27,7 +27,7 @@ def get_objects(limit, offset):
     last = now
     for obj in objs:
         timestamp = datetime.strptime(
-            obj["creation_timestamp"], "%Y-%m-%dT%H:%M:%SZ"
+            obj["creation_timestamp"], "%Y-%m-%dT%H:%M:%S.%fZ"
         ).replace(tzinfo=tz.tzutc())
         delta = (now - timestamp).total_seconds()
         if last == now:
