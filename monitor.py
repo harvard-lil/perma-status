@@ -43,16 +43,19 @@ def perma_monitor():
     nth_ago = objects[-1][1]
     statistic = mrcc / nth_ago
 
-    report = {"status": "OK", "messages": []}
+    report = {"status": [], "messages": []}
     if unfinished > thresholds["unfinished"]:
-        report["status"] = "PROBLEM_PENDING"
+        report["status"].append("PROBLEM_PENDING")
         msg = f"{unfinished} uncompleted captures in the last {limit}"
         report["messages"].append(msg)
 
     if statistic > thresholds["statistic"]:
-        report["status"] = "PROBLEM_LOWUSAGE"
+        report["status"].append("PROBLEM_LOWUSAGE")
         msg = f"statistic for time to last successful capture) is {statistic}"
         report["messages"].append(msg)
+
+    if not report["status"]:
+        report["status"] = ["OK"]
 
     output = {
         "unfinished": unfinished,
