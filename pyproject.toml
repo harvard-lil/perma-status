@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "perma-status"
-version = "0.2.0"
+version = "0.2.1"
 description = ""
 authors = ["Ben Steinberg <bsteinberg@law.harvard.edu>"]
 readme = "README.md"
