@@ -9,8 +9,10 @@ def lookup(url):
     """
     r = requests.get(url)
     data = r.json()
-    return (data["objects"], data["meta"]["next"])
-
+    if data["objects"]:
+        return (data["objects"], data["meta"]["next"])
+    else:
+        return([], None)
 
 def get_objects(limit, offset):
     """
@@ -57,16 +59,14 @@ def get_counts(days):
     Get the number of captures per day for a given sequence of days
     """
     counts = dict.fromkeys(days, 0)
-    url = "https://api.perma.cc/v1/public/archives/"
+    next_url = "https://api.perma.cc/v1/public/archives/"
     objects = []
 
-    while True:
-        (objs, next_url) = lookup(url)
+    while next_url:
+        (objs, next_url) = lookup(next_url)
         objects = objects + objs
         if objs[-1]["creation_timestamp"] < min(days):
             break
-        else:
-            url = next_url
 
     for obj in objects:
         day = str(obj["creation_timestamp"][0:10])
