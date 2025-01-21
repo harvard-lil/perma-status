@@ -1,6 +1,7 @@
-from flask import Flask, render_template, jsonify
 import os
-from perma import get_objects
+import requests
+from datetime import datetime
+from flask import Flask, render_template, jsonify
 
 
 app = Flask(__name__)
@@ -25,26 +26,64 @@ def perma_status(up="up!", message=""):
         return jsonify({"error": "missing template"}), 500
 
 
+def age(objects, now, f):
+    return (
+        now - datetime.strptime(
+            f(
+                [
+                    o['creation_timestamp']
+                    for o in objects if o['capture_time']
+                ]
+            ), "%Y-%m-%dT%H:%M:%S.%fZ"
+        )
+    ).total_seconds()
+
+
 @app.route("/monitor")
 def perma_monitor():
     """ hit the Perma API and get the last twenty captures for analysis """
     limit = 20
     thresholds = {"unfinished": 7, "statistic": 0.9}
-    objects = get_objects(limit, 0)
-
-    # how many of the last {limit} captures that are not user uploads
-    # are not complete?
-    unfinished = len([x for x in objects if x[3] is None and (not x[4])])
-
-    # what is the ratio of seconds from now to the last completed capture
-    # to the seconds from now to {limit} captures ago?
-    # 'mrcc' means 'most recent completed capture'
-    mrcc = list(filter(lambda x: x[3] is not None, objects))[0][1]
-    nth_ago = objects[-1][1]
-    statistic = mrcc / nth_ago
+    base = 'https://api.perma.cc/v1/public/archives'
+    limit = 20
+    offset = 0
+    url = f'{base}?limit={limit}&offset={offset}'
 
     report = {"status": [], "messages": []}
-    if unfinished > thresholds["unfinished"]:
+
+    try:
+        objects = requests.get(url).json()['objects']
+    except Exception as e:
+        report["status"].append("PROBLEM_PENDING")
+        report["messages"].append(f"API unavailable: {e}")
+        return jsonify(report=report)
+
+    pending = sum(
+        [
+            any(
+                [
+                    "pending" in c['status']
+                    for c in o['captures']
+                    if not c['user_upload']
+                ]
+            )
+            for o in objects
+        ]
+    )
+
+    # what is the ratio of seconds from now to the last completed capture to
+    # the seconds from now to the oldest capture within {limit} captures ago?
+    now = datetime.utcnow()
+    try:
+        oldest = age(objects, now, min)
+        newest = age(objects, now, max)
+        statistic = newest / oldest
+    except Exception as e:
+        report["status"].append("PROBLEM_PENDING")
+        report["messages"].append(f"Couldn't get capture ages: {e}")
+        return jsonify(report=report)
+
+    if pending > thresholds["unfinished"]:
         report["status"].append("PROBLEM_PENDING")
         msg = f"{unfinished} uncompleted captures in the last {limit}"
         report["messages"].append(msg)
@@ -58,7 +97,7 @@ def perma_monitor():
         report["status"] = ["OK"]
 
     output = {
-        "unfinished": unfinished,
+        "unfinished": pending,
         "statistic": statistic,
         "report": report
     }
