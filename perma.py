@@ -6,7 +6,10 @@ def lookup(url):
     Helper function for iterating through the Perma API
     """
     r = requests.get(url)
-    data = r.json()
+    try:
+        data = r.json()
+    except Exception as e:
+        raise Exception(f"Failed to get JSON: {e} -- response content is {r.text}")
     if data["objects"]:
         return (data["objects"], data["meta"]["next"])
     else:
