@@ -60,13 +60,11 @@ def perma_monitor():
 
     pending = sum(
         [
-            any(
-                [
-                    "pending" in c['status']
-                    for c in o['captures']
-                    if not c['user_upload']
-                ]
-            )
+            any([
+                "pending" in c['status']
+                for c in o['captures']
+                if not c['user_upload']
+            ])
             for o in objects
         ]
     )
