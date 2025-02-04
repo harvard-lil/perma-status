@@ -88,7 +88,7 @@ def perma_monitor():
 
     if pending > thresholds["unfinished"]:
         report["status"].append("PROBLEM_PENDING")
-        msg = f"{unfinished} uncompleted captures in the last {limit}"
+        msg = f"{pending} uncompleted captures in the last {limit}"
         report["messages"].append(msg)
 
     if not report["status"]:
