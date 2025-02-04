@@ -81,7 +81,7 @@ def perma_monitor():
             report["status"].append("PROBLEM_PENDING")
             report["messages"].append(f"Couldn't get capture ages: {e}")
             return jsonify(report=report)
-        if statistic > thresholds["statistic"]:
+        if statistic != 1.0 and statistic > thresholds["statistic"]:
             report["status"].append("PROBLEM_LOWUSAGE")
             msg = f"statistic for time to last successful capture) is {statistic}"
             report["messages"].append(msg)
