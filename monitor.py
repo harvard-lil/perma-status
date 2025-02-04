@@ -85,6 +85,8 @@ def perma_monitor():
             report["status"].append("PROBLEM_LOWUSAGE")
             msg = f"statistic for time to last successful capture) is {statistic}"
             report["messages"].append(msg)
+    else:
+        statistic = "n/a"
 
     if pending > thresholds["unfinished"]:
         report["status"].append("PROBLEM_PENDING")
