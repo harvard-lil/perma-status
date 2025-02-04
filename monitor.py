@@ -72,23 +72,23 @@ def perma_monitor():
     # what is the ratio of seconds from now to the last completed capture to
     # the seconds from now to the oldest capture within {limit} captures ago?
     now = datetime.utcnow()
-    try:
-        oldest = age(objects, now, min)
-        newest = age(objects, now, max)
-        statistic = newest / oldest
-    except Exception as e:
-        report["status"].append("PROBLEM_PENDING")
-        report["messages"].append(f"Couldn't get capture ages: {e}")
-        return jsonify(report=report)
+    if pending != limit:
+        try:
+            oldest = age(objects, now, min)
+            newest = age(objects, now, max)
+            statistic = newest / oldest
+        except Exception as e:
+            report["status"].append("PROBLEM_PENDING")
+            report["messages"].append(f"Couldn't get capture ages: {e}")
+            return jsonify(report=report)
+        if statistic > thresholds["statistic"]:
+            report["status"].append("PROBLEM_LOWUSAGE")
+            msg = f"statistic for time to last successful capture) is {statistic}"
+            report["messages"].append(msg)
 
     if pending > thresholds["unfinished"]:
         report["status"].append("PROBLEM_PENDING")
         msg = f"{unfinished} uncompleted captures in the last {limit}"
-        report["messages"].append(msg)
-
-    if statistic > thresholds["statistic"]:
-        report["status"].append("PROBLEM_LOWUSAGE")
-        msg = f"statistic for time to last successful capture) is {statistic}"
         report["messages"].append(msg)
 
     if not report["status"]:
