@@ -41,11 +41,10 @@ def age(objects, now, f):
 
 @app.route("/monitor")
 def perma_monitor():
-    """ hit the Perma API and get the last twenty captures for analysis """
-    limit = 20
-    thresholds = {"unfinished": 7, "statistic": 0.9}
+    """ hit the Perma API and get the last {limit} captures for analysis """
+    thresholds = {"unfinished": 25, "statistic": 0.9}
     base = 'https://api.perma.cc/v1/public/archives'
-    limit = 20
+    limit = 50
     offset = 0
     url = f'{base}?limit={limit}&offset={offset}'
 
