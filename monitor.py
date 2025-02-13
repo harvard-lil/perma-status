@@ -82,7 +82,7 @@ def perma_monitor():
             return jsonify(report=report)
         if statistic != 1.0 and statistic > thresholds["statistic"]:
             report["status"].append("PROBLEM_LOWUSAGE")
-            msg = f"statistic for time to last successful capture) is {statistic}"
+            msg = f"statistic for time to last successful capture is {statistic}"
             report["messages"].append(msg)
     else:
         statistic = "n/a"
