@@ -1,6 +1,8 @@
 import requests
+from tenacity import retry, wait_exponential
 
 
+@retry(wait=wait_exponential(multiplier=1, min=4, max=10))
 def lookup(url):
     """
     Helper function for iterating through the Perma API
