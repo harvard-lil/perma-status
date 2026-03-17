@@ -67,17 +67,22 @@ def retrieve_data(start=a_week_ago,
                   end=yesterday):
     """
     Posts a GraphQL query to the Cloudflare analytics API endpoint
-    and returns the result
+    and returns the result. Uses API token auth (Bearer).
     """
     load_dotenv()
-    url = 'https://api.cloudflare.com/client/v4/graphql'
-    headers = {'Content-Type': 'application/json',  # necessary?
-               'X-Auth-Email': os.getenv('CF_EMAIL'),
-               'X-Auth-Key': os.getenv('CF_KEY')}
+    url = os.getenv('CLOUDFLARE_ANALYTICS_ENDPOINT')
+    token = os.getenv('CF_API_TOKEN')
+    zone = os.getenv('CF_ZONE')
+
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': f'Bearer {token}',
+    }
+
     data = query.replace('{', '{{') \
                 .replace('}', '}}') \
                 .replace('REPLACE', '{}')  \
-                .format(os.getenv('CF_ZONE'), start, end)
+                .format(zone, start, end)
     r = requests.post(url, headers=headers, json={'query': data})
     return r.json()
 

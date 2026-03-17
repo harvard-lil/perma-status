@@ -9,10 +9,12 @@ changes to `poetry.lock`, export requirements for use in deployment:
 
     poetry export -o requirements.txt
 
+Create an `.env` file in the project.
+
 In deployment, set up a virtual environment, install requirements, and
 generate the index template with
 
-    python index.py > templates/_index.html && mv templates/_index.html templates/index.html
+    poetry run python index.py > templates/_index.html && mv templates/_index.html templates/index.html
 
 Run the Flask application:
 

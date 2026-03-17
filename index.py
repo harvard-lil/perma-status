@@ -1,6 +1,8 @@
+import os
 import click
+from dotenv import load_dotenv
 from cloudflare import retrieve_data
-from perma import get_counts
+from perma import get_counts_for_days
 from datetime import datetime, timedelta
 import pygal
 from pygal.style import DefaultStyle
@@ -13,9 +15,12 @@ def index():
     """
     This program prints the index template for the Perma status page.
     """
+    load_dotenv()
+    lookback = int(os.getenv('DAILY_LINK_LOOKBACK_DAYS'))
+
     data = retrieve_data()['data']
 
-    x_labels = days_map("%a %Y-%m-%d")
+    x_labels = days_map("%a %Y-%m-%d", lookback)
 
     custom_style = DefaultStyle
     custom_style.background = 'transparent'
@@ -57,8 +62,8 @@ def index():
     captures.x_labels = x_labels
     captures.value_formatter = number_formatter
 
-    days = days_map("%Y-%m-%d")
-    counts = get_counts(days)
+    days = days_map("%Y-%m-%d", lookback)
+    counts = get_counts_for_days(days)
     captures.add("captures",
                  [counts[day] for day in days],
                  formatter=lambda d: humanize.intcomma(d))
@@ -81,14 +86,15 @@ def index():
         cloudflare=renders[1]))
 
 
-def days_map(format):
+def days_map(date_format, lookback=7):
     """
-    Helper function for generating a list of day-strings in a given format
+    Helper function for generating a list of day strings in a given format.
+    lookback: number of days (e.g. 7 = last 7 days before today).
     """
     today = datetime.today()
     return list(map(
-        lambda d: d.strftime(format),
-        [today + timedelta(days=i) for i in range(-7, 0)]
+        lambda d: d.strftime(date_format),
+        [today + timedelta(days=i) for i in range(-lookback, 0)]
     ))
 
 
