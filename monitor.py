@@ -2,10 +2,11 @@ import os
 import requests
 from datetime import datetime
 from flask import Flask, render_template, jsonify
+from dotenv import load_dotenv
 
 
 app = Flask(__name__)
-
+load_dotenv()
 
 @app.route("/")
 def perma_status(up="up!", message=""):
@@ -43,7 +44,8 @@ def age(objects, now, f):
 def perma_monitor():
     """ hit the Perma API and get the last {limit} captures for analysis """
     thresholds = {"unfinished": 25, "statistic": 0.9}
-    base = 'https://api.perma.cc/v1/public/archives'
+    base = os.getenv('PERMA_ARCHIVES_ENDPOINT')
+    timeout = int(os.getenv('REQUEST_TIMEOUT'))
     limit = 50
     offset = 0
     url = f'{base}?limit={limit}&offset={offset}'
@@ -51,7 +53,7 @@ def perma_monitor():
     report = {"status": [], "messages": []}
 
     try:
-        objects = requests.get(url).json()['objects']
+        objects = requests.get(url, timeout=timeout).json()['objects']
     except Exception as e:
         report["status"].append("PROBLEM_PENDING")
         report["messages"].append(f"API unavailable: {e}")
