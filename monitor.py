@@ -27,6 +27,11 @@ def perma_status(up="up!", message=""):
         return jsonify({"error": "missing template"}), 500
 
 
+@app.route("/health")
+def health():
+    return jsonify({"status": "healthy"}), 200
+
+
 def age(objects, now, f):
     return (
         now - datetime.strptime(
