@@ -1,0 +1,58 @@
+name: Regenerate status page
+
+# Daily run at 00:16 UTC matches the original cron on status-07.
+# workflow_dispatch lets anyone re-run on demand.
+on:
+  schedule:
+    - cron: '16 0 * * *'
+  workflow_dispatch: {}
+
+# We need to write back to the repo (the regenerated docs/index.html
+# is committed so GitHub Pages can serve it).
+permissions:
+  contents: write
+
+concurrency:
+  group: regenerate
+  cancel-in-progress: false
+
+jobs:
+  regenerate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Install uv (with cache)
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          enable-cache: true
+
+      - name: Regenerate docs/index.html
+        env:
+          CLOUDFLARE_ANALYTICS_ENDPOINT: https://api.cloudflare.com/client/v4/graphql
+          CF_ZONE: ${{ secrets.CF_ZONE }}
+          CF_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
+          PERMA_DAILY_LINK_COUNTS_ENDPOINT: ${{ secrets.PERMA_DAILY_LINK_COUNTS_ENDPOINT }}
+          PERMA_API_KEY: ${{ secrets.PERMA_API_KEY }}
+          DAILY_LINK_LOOKBACK_DAYS: '7'
+          REQUEST_TIMEOUT: '10'
+        run: |
+          set -euo pipefail
+          mkdir -p docs
+          uv run --frozen python index.py > docs/index.html.new
+          # Atomic-ish swap so a half-written file never lands.
+          mv docs/index.html.new docs/index.html
+
+      - name: Commit and push if changed
+        run: |
+          set -euo pipefail
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet docs/index.html; then
+            echo "No changes to docs/index.html; skipping commit."
+            exit 0
+          fi
+          git add docs/index.html
+          git commit -m "Regenerate docs/index.html ($(date -u +%Y-%m-%dT%H:%MZ))"
+          git push
