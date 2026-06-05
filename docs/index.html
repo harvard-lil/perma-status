@@ -16,19 +16,18 @@
           <div class="row container cont-fixed">
             <h2>perma captures this week</h2>
             <figure>
-              {{ captures|safe }}
+              <p><em>Charts will appear here after the first scheduled regeneration (daily, 00:16 UTC).</em></p>
             </figure>
           </div>
           <div class="row container cont-fixed">
             <h2>cloudflare stats this week</h2>
             <figure>
-              {{ cloudflare|safe }}
+              <p><em>Charts will appear here after the first scheduled regeneration (daily, 00:16 UTC).</em></p>
             </figure>
           </div>
         </div>
       </div>
     </main>
     <script src="static/banner.js"></script>
-    {% include 'footer.html' %}
   </body>
 </html>
