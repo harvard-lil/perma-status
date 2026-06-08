@@ -9,7 +9,9 @@ A daily GitHub Actions workflow regenerates the page; a human-edited
 
 - **`docs/`** is the source GitHub Pages serves. Configure the repo
   under Settings → Pages as "Deploy from a branch" with source `main`
-  / `/docs`.
+  / `/docs`. **NOTE: We currently use "deploy from a branch," instead of
+  deploying from an action as we usually do, for faster status updates
+  during an event.
 - **`docs/index.html`** is regenerated daily at 00:16 UTC by
   [`.github/workflows/regenerate.yml`](.github/workflows/regenerate.yml),
   which runs `python index.py` against the Perma daily-link-counts API
