@@ -5,6 +5,39 @@ A static GitHub Pages site for [status.perma.cc](https://status.perma.cc/).
 A daily GitHub Actions workflow regenerates the page; a human-edited
 `docs/status.json` controls the "up / down" banner.
 
+## Setting Perma's status message
+
+To change the up/down status and message, you can [directly edit status.json](https://github.com/harvard-lil/perma-status/edit/main/docs/status.json)
+and commit to `main`.
+
+Example **up** message (default):
+
+```
+{
+  "up": "up!",
+  "message": ""
+}
+```
+
+Example **down** message:
+
+```
+{
+  "up": "down",
+  "message": "We are deploying updates."
+}
+```
+
+These fields will be displayed at status.perma.cc as:
+
+```
+h1: Perma is <up>
+h2: <message>
+```
+
+Updates should appear in under a minute after pushing to `main`, as soon as the 
+"pages build and deployment" action finishes running.
+
 ## How it works
 
 - **`docs/`** is the source GitHub Pages serves. Configure the repo
